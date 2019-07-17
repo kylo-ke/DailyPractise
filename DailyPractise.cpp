@@ -4,15 +4,46 @@
 #include <random>
 using namespace std;
 
-int main()
+enum MyEnum
 {
-	std::random_device rd;
-	std::map<int, int> hist;
-	std::uniform_int_distribution<int> dist(0, 100);
+	kk,
+	tt,
+	bb = 10,
+	hh 
+};
 
-	cout << dist(rd) << endl;
-	cout << dist(rd) << endl;
-	cout << dist(rd) << endl;
 
+struct A 
+{
+	char a;
+	short c;
+	int b;
+};
+
+
+
+union UStruct
+{
+	char s[9];
+	int n;
+	double d;
+};
+
+
+union TestMemory
+{
+	unsigned int numA;
+	int numB;
+};
+
+
+int main(void)
+{
+	int aa = 10;
+	TestMemory  myNum;
+	myNum.numB= -100;
+	
+	
+	cout << myNum.numA << endl;
 	return 0;
 }
