@@ -1,18 +1,24 @@
-﻿//#include <iostream>
-//#include <string>
-//#include <map>
-//#include <list>
-//#include <random>
-//#include "destructorFunction.h"
-//
-//
-//
-//
-//int main()
-//{
-//	A* a = new B(5, 10);
-//
-//	//a->~B();
-//	delete a;
-//	return 0;
-//}
+﻿#include "common.h"
+
+
+class Test
+{
+public:
+	static void    fun()
+	{
+		cout << "test function" << endl;
+	}
+};
+
+typedef void (*FUNT)();
+
+
+int main()
+{
+	int  arrs[10];
+	FUNT  foo(Test::fun);
+	cout << hex << (unsigned)foo << endl;
+	cout << hex << (unsigned)(&Test::fun) << endl;
+	foo();
+	return 0;	
+}

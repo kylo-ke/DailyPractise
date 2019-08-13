@@ -1,4 +1,4 @@
-#pragma once 
+﻿#pragma once 
 #include "common.h"
 #include <thread>
 #include <memory>
@@ -42,19 +42,19 @@ private:
 };
 
 
-int main()
-{
-	int someLocalState = 111;
-	// attention that passing ref_parameter must use std::ref or passing moving parameter must use std::move
-	unique_ptr<moveTest>  myMove(new moveTest(someLocalState) );
-	unique_ptr<moveTest>   foo = std::move(myMove);
-	thread  myTheard(changeNumber, std::move(foo));
-	
-	if (myTheard.joinable())
-	{
-		myTheard.join();
-		cout << " mythread is joined" << endl;
-	}
-	cout << std::thread::hardware_concurrency() << endl;
-	return 0;
-}
+//int main()
+//{
+//	int someLocalState = 111;
+//	// attention that passing ref_parameter must use std::ref or passing moving parameter must use std::move
+//	unique_ptr<moveTest>  myMove(new moveTest(someLocalState) );
+//	unique_ptr<moveTest>   foo = std::move(myMove);
+//	thread  myTheard(changeNumber, std::move(foo));
+//	
+//	if (myTheard.joinable())
+//	{
+//		myTheard.join();
+//		cout << " mythread is joined" << endl;
+//	}
+//	cout << std::thread::hardware_concurrency() << endl;
+//	return 0;
+//}
