@@ -1,24 +1,34 @@
 ﻿#include "common.h"
 
 
-class Test
+class Base
+{
+protected:
+	int num = 100;
+};
+
+class BaseA : public Base
 {
 public:
-	static void    fun()
+	int getNum()
 	{
-		cout << "test function" << endl;
+		return this->num;
 	}
 };
 
-typedef void (*FUNT)();
+class BaseB : public BaseA
+{
+public:
+	int getBnum()
+	{
+		return this->num;
+	}
+};
 
 
 int main()
 {
-	int  arrs[10];
-	FUNT  foo(Test::fun);
-	cout << hex << (unsigned)foo << endl;
-	cout << hex << (unsigned)(&Test::fun) << endl;
-	foo();
+	BaseB    testb;
+	cout<<testb.getBnum();
 	return 0;	
 }
