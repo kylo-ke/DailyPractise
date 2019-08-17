@@ -3,32 +3,45 @@
 
 class Base
 {
-protected:
-	int num = 100;
-};
-
-class BaseA : public Base
-{
 public:
+	class nestedClass
+	{
+	public:
+		int number =100;
+	}*	basePtr;
+
+	int name;
 	int getNum()
 	{
-		return this->num;
+		return basePtr->number;
 	}
+	Base() :basePtr(new nestedClass)
+	{
+
+	}
+	friend  class friendTest;
+private:
+	int keyNum = 999;
+
 };
 
-class BaseB : public BaseA
+
+class friendTest
 {
 public:
-	int getBnum()
+	int getBaseNum()
 	{
-		return this->num;
+		return baseCon.keyNum;
 	}
+	Base   baseCon;
 };
 
 
 int main()
 {
-	BaseB    testb;
-	cout<<testb.getBnum();
-	return 0;	
+	friendTest  fooClass;
+	cout << fooClass.getBaseNum();
+	return 0;
 }
+
+
