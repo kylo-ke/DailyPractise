@@ -104,19 +104,10 @@ typedef void(*FunPtr)();
 
 int main()
 {
-	//DerivedA   fooDerived(100, 99);
-	//inside c++ virtual table 
-	////must notice that long int is 8 byte int win64
-	//FunPtr funptr = (FunPtr)*(long long int*)(*(long long int*)(&fooDerived));
-	////FunPtr funptr = (FunPtr)(**(FunPtr**)(&fooDerived));
-	//funptr();
-
-
-
-	//comprehend virtual Derived
-	CompoundDerivedAndBase  Compound(1, 2, 3, 4);
-
-	cout << Compound.getNum() << endl;
+	//must notice that arrs is 12
+	char arrs[12] = "hello world";
+	
+	cout << sizeof(arrs) << endl;
 
 	return 0;
 }
