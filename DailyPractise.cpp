@@ -104,10 +104,9 @@ typedef void(*FunPtr)();
 
 int main()
 {
-	//must notice that arrs is 12
-	char arrs[12] = "hello world";
 	
-	cout << sizeof(arrs) << endl;
+	int a = 6 > 5 ? 6 : 5 + 2;
+	cout << a << endl;
 
 	return 0;
 }
