@@ -1,7 +1,7 @@
 ﻿#pragma warning(disable: 4250)
 
 #include "common.h"
-
+#include <fstream>
 
 class Base
 {
@@ -104,9 +104,28 @@ typedef void(*FunPtr)();
 
 int main()
 {
-	
-	int a = 6 > 5 ? 6 : 5 + 2;
-	cout << a << endl;
+	//ifstream   File;
+	//File.open("D:/UnrealSolution/SVN_Soul/一键安装插件.bat");
+	//
+	//char c = File.get();
+	//while (File.good())
+	//{
+	//	cout << c;
+	//	c = File.get();
+	//}
+
+	char * buffer;
+	long size;
+	ifstream in("D:/UnrealSolution/SVN_Soul/一键安装插件.bat", ios::in | ios::binary | ios::ate);
+	size = in.tellg();
+	in.seekg(0, ios::beg);
+	buffer = new char[size];
+	in.read(buffer, size);
+	in.close();
+
+	cout << buffer << "the complete file is in a buffer";
+
+	delete[] buffer;
 
 	return 0;
 }
