@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include <fstream>
+#include <regex>
 
 class Base
 {
@@ -104,30 +105,49 @@ typedef void(*FunPtr)();
 
 int main()
 {
-	//ifstream   File;
-	//File.open("D:/UnrealSolution/SVN_Soul/一键安装插件.bat");
-	//
-	//char c = File.get();
-	//while (File.good())
-	//{
-	//	cout << c;
-	//	c = File.get();
+	string  target = "subject";
+	std::regex   reg("sub");
+
+	smatch  arrs;
+	if (std::regex_search(target, arrs, reg))
+	{
+		for (int index = 0; index < arrs.size(); ++index)
+		{
+			cout << "匹配： "<<arrs[index] << endl;
+		}
+	}
+	cout << endl;
+
+	//if (std::regex_match("subject", std::regex("(sub)(.*)")))
+	//	std::cout << "string literal matched\n";
+
+	//const char cstr[] = "subject";
+	//std::string s("subject");
+	//std::regex e("(sub)(.*)");
+
+	//if (std::regex_match(s, e))
+	//	std::cout << "string object matched\n";
+
+	//if (std::regex_match(s.begin(), s.end(), e))
+	//	std::cout << "range matched\n";
+
+
+	//std::smatch sm;    // same as std::match_results<string::const_iterator> sm;
+	//std::regex_match(s, sm, e);
+	//std::cout << "string object with " << sm.size() << " matches\n";
+
+
+
+	//std::cout << "the matches were: ";
+	//for (unsigned i = 0; i < sm.size(); ++i) {
+	//	std::cout << "[" << sm[i] << "] ";
 	//}
 
-	char * buffer;
-	long size;
-	ifstream in("D:/UnrealSolution/SVN_Soul/一键安装插件.bat", ios::in | ios::binary | ios::ate);
-	size = in.tellg();
-	in.seekg(0, ios::beg);
-	buffer = new char[size];
-	in.read(buffer, size);
-	in.close();
 
-	cout << buffer << "the complete file is in a buffer";
 
-	delete[] buffer;
 
 	return 0;
+
 }
 
 
