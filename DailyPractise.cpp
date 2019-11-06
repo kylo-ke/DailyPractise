@@ -103,52 +103,10 @@ private:
 
 typedef void(*FunPtr)();
 
-int main()
-{
-	string  target = "subject";
-	std::regex   reg("sub");
-
-	smatch  arrs;
-	if (std::regex_search(target, arrs, reg))
-	{
-		for (int index = 0; index < arrs.size(); ++index)
-		{
-			cout << "匹配： "<<arrs[index] << endl;
-		}
-	}
-	cout << endl;
-
-	//if (std::regex_match("subject", std::regex("(sub)(.*)")))
-	//	std::cout << "string literal matched\n";
-
-	//const char cstr[] = "subject";
-	//std::string s("subject");
-	//std::regex e("(sub)(.*)");
-
-	//if (std::regex_match(s, e))
-	//	std::cout << "string object matched\n";
-
-	//if (std::regex_match(s.begin(), s.end(), e))
-	//	std::cout << "range matched\n";
-
-
-	//std::smatch sm;    // same as std::match_results<string::const_iterator> sm;
-	//std::regex_match(s, sm, e);
-	//std::cout << "string object with " << sm.size() << " matches\n";
+int number = 19900;
 
 
 
-	//std::cout << "the matches were: ";
-	//for (unsigned i = 0; i < sm.size(); ++i) {
-	//	std::cout << "[" << sm[i] << "] ";
-	//}
-
-
-
-
-	return 0;
-
-}
 
 
 
