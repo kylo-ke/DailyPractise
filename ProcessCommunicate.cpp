@@ -22,24 +22,24 @@
 //	}
 //
 //	pid = fork();
-//	if (-1 == pid) //´Ë´¦ÎªÁËÑéÖ¤¸¸×Ó½ø³ÌÊÇ·ñ´´½¨³É¹¦£¬Èç¹ûÎ´´´½¨³É¹¦£¬Ôò·µ»Ø-1
+//	if (-1 == pid) //æ­¤å¤„ä¸ºäº†éªŒè¯çˆ¶å­è¿›ç¨‹æ˜¯å¦åˆ›å»ºæˆåŠŸï¼Œå¦‚æœæœªåˆ›å»ºæˆåŠŸï¼Œåˆ™è¿”å›-1
 //	{
 //		perror("fork");
 //		return -1;
 //	}
 //	else if (0 == pid)
 //	{
-//		printf(¡°this is child %d\n¡±, getpid());
+//		printf(â€œthis is child %d\nâ€, getpid());
 //		close(*read_fd);
 //		result = write(*write_fd, string, strlen(string));
 //		return 0;
 //	}
 //	else
 //	{
-//		printf(¡°this is parent %d\n¡±, getpid());
+//		printf(â€œthis is parent %d\nâ€, getpid());
 //		close(*write_fd);
 //		nbytes = read(*read_fd, readbuffer, sizeof(readbuffer) - 1);
-//		printf("receive %d data£º%s\n", nbytes, readbuffer);
+//		printf("receive %d dataï¼š%s\n", nbytes, readbuffer);
 //	}
 //	return 0;
 //}
@@ -54,61 +54,61 @@
 
 
 
-int main()
-{
-
-	HANDLE hParentRead, hParentWrite, hChildRead, hChildWrite; //´´½¨4¸ö¾ä±ú
-
-	STARTUPINFO si = { 0 };                         //Æô¶¯ĞÅÏ¢½á¹¹Ìå
-	si.cb = sizeof(si);
-	PROCESS_INFORMATION pi = { 0 };                 //½ø³ÌĞÅÏ¢½á¹¹Ìå
-
-	DWORD dwWritedBytes = 0;
-	DWORD dwReadedBytes = 0;
-
-	DWORD dwBytesRead = 0;
-	DWORD dwTotalBytesAvail = 0;
-	DWORD dwBytesLeftThisMessage = 0;
-
-	SECURITY_ATTRIBUTES sa = { 0 };                //°²È«ÊôĞÔÃèÊö·û        
-	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.bInheritHandle = TRUE;                      //ÉèÖÃ¾ä±ú¿É¼Ì³Ğ
-
-	//´´½¨¹ÜµÀ1. ¸¸½ø³Ì¶Á -> ×Ó½ø³ÌĞ´Èë
-	BOOL bRet = CreatePipe(&hParentRead,
-		&hChildWrite,
-		&sa,
-		0);
-
-	//´´½¨¹ÜµÀ2.  ×Ó½ø³Ì¶Á->¸¸½ø³ÌĞ´.
-	bRet = CreatePipe(&hChildRead,
-		&hParentWrite,
-		&sa,
-		0);
-
-	//ÕâÀï½«×Ó½ø³ÌĞ´ÖØ¶¨Ïòµ½ stdoutÖĞ. ×Ó½ø³Ì¶ÁÈ¡ÖØ¶¨Ïòµ½stdinputÖĞ
-	si.hStdInput = hChildRead;
-	si.hStdOutput = hChildWrite;
-	si.dwFlags = STARTF_USESTDHANDLES;   //ÉèÖÃ´°¿ÚÒş²ØÆô¶¯
-
-
-
-	char text[] = "cmd.exe";
-	wchar_t wtext[20];
-	mbstowcs(wtext, text, strlen(text) + 1);//Plus null
-	LPWSTR ptr = wtext;
-	bRet = CreateProcess(NULL,
-		wtext,                     //´´½¨cmd½ø³Ì.Ä¬ÈÏÑ°ÕÒcmd½ø³Ì.
-		NULL,
-		NULL,
-		TRUE,
-		CREATE_NO_WINDOW,
-		NULL,
-		NULL,
-		&si,
-		&pi);
-
-	char szBuffer[15] = "calc \n";
-	WriteFile(hParentWrite, szBuffer, 15, NULL, 0);//Ê¹ÓÃwriteFile²Ù×÷¹ÜµÀ,¸øcmd·¢ËÍÊı¾İÃüÁî.
-	return 0;
-}
+//int main()
+//{
+//
+//	HANDLE hParentRead, hParentWrite, hChildRead, hChildWrite; //åˆ›å»º4ä¸ªå¥æŸ„
+//
+//	STARTUPINFO si = { 0 };                         //å¯åŠ¨ä¿¡æ¯ç»“æ„ä½“
+//	si.cb = sizeof(si);
+//	PROCESS_INFORMATION pi = { 0 };                 //è¿›ç¨‹ä¿¡æ¯ç»“æ„ä½“
+//
+//	DWORD dwWritedBytes = 0;
+//	DWORD dwReadedBytes = 0;
+//
+//	DWORD dwBytesRead = 0;
+//	DWORD dwTotalBytesAvail = 0;
+//	DWORD dwBytesLeftThisMessage = 0;
+//
+//	SECURITY_ATTRIBUTES sa = { 0 };                //å®‰å…¨å±æ€§æè¿°ç¬¦        
+//	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+//	sa.bInheritHandle = TRUE;                      //è®¾ç½®å¥æŸ„å¯ç»§æ‰¿
+//
+//	//åˆ›å»ºç®¡é“1. çˆ¶è¿›ç¨‹è¯» -> å­è¿›ç¨‹å†™å…¥
+//	BOOL bRet = CreatePipe(&hParentRead,
+//		&hChildWrite,
+//		&sa,
+//		0);
+//
+//	//åˆ›å»ºç®¡é“2.  å­è¿›ç¨‹è¯»->çˆ¶è¿›ç¨‹å†™.
+//	bRet = CreatePipe(&hChildRead,
+//		&hParentWrite,
+//		&sa,
+//		0);
+//
+//	//è¿™é‡Œå°†å­è¿›ç¨‹å†™é‡å®šå‘åˆ° stdoutä¸­. å­è¿›ç¨‹è¯»å–é‡å®šå‘åˆ°stdinputä¸­
+//	si.hStdInput = hChildRead;
+//	si.hStdOutput = hChildWrite;
+//	si.dwFlags = STARTF_USESTDHANDLES;   //è®¾ç½®çª—å£éšè—å¯åŠ¨
+//
+//
+//
+//	char text[] = "cmd.exe";
+//	wchar_t wtext[20];
+//	mbstowcs(wtext, text, strlen(text) + 1);//Plus null
+//	LPWSTR ptr = wtext;
+//	bRet = CreateProcess(NULL,
+//		wtext,                     //åˆ›å»ºcmdè¿›ç¨‹.é»˜è®¤å¯»æ‰¾cmdè¿›ç¨‹.
+//		NULL,
+//		NULL,
+//		TRUE,
+//		CREATE_NO_WINDOW,
+//		NULL,
+//		NULL,
+//		&si,
+//		&pi);
+//
+//	char szBuffer[15] = "calc \n";
+//	WriteFile(hParentWrite, szBuffer, 15, NULL, 0);//ä½¿ç”¨writeFileæ“ä½œç®¡é“,ç»™cmdå‘é€æ•°æ®å‘½ä»¤.
+//	return 0;
+//}

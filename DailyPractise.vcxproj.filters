@@ -23,13 +23,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DailyPractise.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="concurrency.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ProcessCommunicate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mainTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
