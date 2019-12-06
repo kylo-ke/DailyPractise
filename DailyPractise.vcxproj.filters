@@ -15,15 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="destructorFunction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="concurrency.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="DailyPractise.cpp">
+    <ClCompile Include="ProcessCommunicate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="childpipeExe.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="parentPipeExe.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
