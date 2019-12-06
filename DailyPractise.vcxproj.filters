@@ -29,7 +29,10 @@
     <ClCompile Include="ProcessCommunicate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="mainTest.cpp">
+    <ClCompile Include="childpipeExe.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="parentPipeExe.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
