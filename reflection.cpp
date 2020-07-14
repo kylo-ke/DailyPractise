@@ -85,15 +85,15 @@ struct Point {
 	Point Add(float diff) { return { x + diff, y + diff }; }
 };
 
-int main() {
-	Reflection<Point>::Instance()
-		.Register(&Point::x, "x")
-		.Register(&Point::y, "y")
-		.Register(&Point::Add, "Add");
-	Point p;
-	Reflection<Point>::Instance().Var<float>("x").Of(p) = 2.f;
-	Reflection<Point>::Instance().Var<float>("y").Of(p) = 3.f;
-	Point q = Reflection<Point>::Instance().Call<Point>("Add", p, 1.f);
-	for (auto& nv : Reflection<Point>::Instance().Vars())
-		cout << nv.first << ": " << nv.second->As<float>().Of(q) << endl;
-}
+//int main() {
+//	Reflection<Point>::Instance()
+//		.Register(&Point::x, "x")
+//		.Register(&Point::y, "y")
+//		.Register(&Point::Add, "Add");
+//	Point p;
+//	Reflection<Point>::Instance().Var<float>("x").Of(p) = 2.f;
+//	Reflection<Point>::Instance().Var<float>("y").Of(p) = 3.f;
+//	Point q = Reflection<Point>::Instance().Call<Point>("Add", p, 1.f);
+//	for (auto& nv : Reflection<Point>::Instance().Vars())
+//		cout << nv.first << ": " << nv.second->As<float>().Of(q) << endl;
+//}
