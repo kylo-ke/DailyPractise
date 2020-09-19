@@ -57,7 +57,7 @@ public:
 };
 REGISTER(TestClass);
 
-int main(int argc, char* argv[]) {
-	TestClass* ptrObj = (TestClass*)ClassFactory::getInstance().getClassByName("TestClass");
-	ptrObj->m_print();
-}
+//int main(int argc, char* argv[]) {
+//	TestClass* ptrObj = (TestClass*)ClassFactory::getInstance().getClassByName("TestClass");
+//	ptrObj->m_print();
+//}

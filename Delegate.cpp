@@ -1,39 +1,380 @@
-// bind example
-#include <iostream>     // std::cout
-#include <functional>   // std::bind
+#include <typeinfo>
+#include <list>
+#include <string>
+#include <vector>
 
-// a function: (also works with function object: std::divides<double> my_divide;)
-double my_divide(double x, double y) { return x / y; }
 
-struct MyPair {
-	double a, b;
-	double multiply() { return a * b; }
+
+template<typename ReturnType, typename ...ParamType>
+class IDelegate
+{
+public:
+	IDelegate() {}
+	virtual ~IDelegate() {}
+	virtual bool isType(const std::type_info& _type) = 0;
+	virtual ReturnType invoke(ParamType ... params) = 0;
+	virtual bool compare(IDelegate<ReturnType, ParamType...> *_delegate) const = 0;
 };
 
-int main() {
-	using namespace std::placeholders;    // adds visibility of _1, _2, _3,...
 
-	// binding functions:
-	auto fn_five = std::bind(my_divide, 10, 2);               // returns 10/2
-	std::cout << fn_five() << '\n';                          // 5
+//普通函数的委托
+template<typename ReturnType, typename ...ParamType>
+class CStaticDelegate :
+	public IDelegate<ReturnType, ParamType...>
+{
+public:
 
-	auto fn_half = std::bind(my_divide, _1, 2);               // returns x/2
-	std::cout << fn_half(10) << '\n';                        // 5
+	typedef  ReturnType(*Func)(ParamType...);
 
-	auto fn_invert = std::bind(my_divide, _2, _1);            // returns y/x
-	std::cout << fn_invert(10, 2) << '\n';                    // 0.2
+	CStaticDelegate(Func _func) : mFunc(_func) { }
 
-	auto fn_rounding = std::bind<int>(my_divide, _1, _2);     // returns int(x/y)
-	std::cout << fn_rounding(10, 3) << '\n';                  // 3
+	virtual bool isType(const std::type_info& _type) { return typeid(CStaticDelegate<ReturnType, ParamType...>) == _type; }
 
-	MyPair ten_two{ 10,2 };
+	virtual ReturnType invoke(ParamType ... params) { return mFunc(params...); }
 
-	// binding members:
-	auto bound_member_fn = std::bind(&MyPair::multiply, _1); // returns x.multiply()
-	std::cout << bound_member_fn(ten_two) << '\n';           // 20
+	virtual bool compare(IDelegate<ReturnType, ParamType ...> *_delegate)const
+	{
+		if (0 == _delegate || !_delegate->isType(typeid(CStaticDelegate<ReturnType, ParamType ...>))) return false;
+		CStaticDelegate<ReturnType, ParamType ...> * cast = static_cast<CStaticDelegate<ReturnType, ParamType ...>*>(_delegate);
+		return cast->mFunc == mFunc;
+	}
 
-	auto bound_member_data = std::bind(&MyPair::a, ten_two); // returns ten_two.a
-	std::cout << bound_member_data() << '\n';                // 10
+	virtual ~CStaticDelegate() {}
+private:
+	Func mFunc;
+};
+
+
+//普通函数的委托特化版本
+template<typename ReturnType, typename ...ParamType>
+class CStaticDelegate<ReturnType(*)(ParamType ...)> :
+	public IDelegate<ReturnType, ParamType ...>
+{
+public:
+
+	//定义 Func 为 void (void) 函数类型指针。
+	typedef  ReturnType(*Func)(ParamType...);
+
+	CStaticDelegate(Func _func) : mFunc(_func) { }
+
+	virtual bool isType(const std::type_info& _type) { return typeid(CStaticDelegate<ReturnType(*)(ParamType ...)>) == _type; }
+
+	virtual ReturnType invoke(ParamType ... params) { return mFunc(params...); }
+
+	virtual bool compare(IDelegate<ReturnType, ParamType ...> *_delegate)const
+	{
+		if (0 == _delegate || !_delegate->isType(typeid(CStaticDelegate<ReturnType(*)(ParamType ...)>))) return false;
+		CStaticDelegate<ReturnType(*)(ParamType ...)> * cast = static_cast<CStaticDelegate<ReturnType(*)(ParamType ...)>*>(_delegate);
+		return cast->mFunc == mFunc;
+	}
+
+	virtual ~CStaticDelegate() {}
+private:
+	Func mFunc;
+};
+
+
+//成员函数委托
+template<typename T, typename ReturnType, typename ...ParamType>
+class CMethodDelegate :
+	public IDelegate<ReturnType, ParamType...>
+{
+public:
+	typedef ReturnType(T::*Method)(ParamType...);
+
+	CMethodDelegate(T * _object, Method _method) : mObject(_object), mMethod(_method) { }
+
+	virtual bool isType(const std::type_info& _type) { return typeid(CMethodDelegate<T, ReturnType, ParamType...>) == _type; }
+
+	virtual ReturnType invoke(ParamType...params)
+	{
+		(mObject->*mMethod)(params...);
+	}
+
+	virtual bool compare(IDelegate<ReturnType, ParamType...> *_delegate) const
+	{
+		if (0 == _delegate || !_delegate->isType(typeid(CMethodDelegate<ReturnType, ParamType...>))) return false;
+		CMethodDelegate<ReturnType, ParamType...>* cast = static_cast<CMethodDelegate<ReturnType, ParamType...>*>(_delegate);
+		return cast->mObject == mObject && cast->mMethod == mMethod;
+	}
+
+	CMethodDelegate() {}
+	virtual ~CMethodDelegate() {}
+private:
+	T * mObject;
+	Method mMethod;
+};
+
+//成员函数委托特化
+template<typename T, typename ReturnType, typename ...ParamType>
+class CMethodDelegate<T, ReturnType(T:: *)(ParamType...)> :
+	public IDelegate<ReturnType, ParamType...>
+{
+public:
+	typedef ReturnType(T::*Method)(ParamType...);
+
+	CMethodDelegate(T * _object, Method _method) : mObject(_object), mMethod(_method) { }
+
+	virtual bool isType(const std::type_info& _type) { return typeid(CMethodDelegate<T, ReturnType(T:: *)(ParamType...)>) == _type; }
+
+	virtual ReturnType invoke(ParamType...params)
+	{
+		return (mObject->*mMethod)(params...);
+	}
+
+	virtual bool compare(IDelegate<ReturnType, ParamType...> *_delegate) const
+	{
+		if (0 == _delegate || !_delegate->isType(typeid(CMethodDelegate<T, ReturnType(T:: *)(ParamType...)>))) return false;
+		CMethodDelegate<T, ReturnType(T:: *)(ParamType...)>* cast = static_cast<CMethodDelegate<T, ReturnType(T:: *)(ParamType...)>*>(_delegate);
+		return cast->mObject == mObject && cast->mMethod == mMethod;
+	}
+
+	CMethodDelegate() {}
+	virtual ~CMethodDelegate() {}
+private:
+	T * mObject;
+	Method mMethod;
+};
+
+//多播委托
+template<typename ReturnType, typename ...ParamType>
+class CMultiDelegate
+{
+
+public:
+
+	typedef std::list<IDelegate<ReturnType, ParamType...>*> ListDelegate;
+	typedef typename ListDelegate::iterator ListDelegateIterator;
+	typedef typename ListDelegate::const_iterator ConstListDelegateIterator;
+
+	CMultiDelegate() { }
+	~CMultiDelegate() { clear(); }
+
+	bool empty() const
+	{
+		for (ConstListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if (*iter) return false;
+		}
+		return true;
+	}
+
+	void clear()
+	{
+		for (ListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if (*iter)
+			{
+				delete (*iter);
+				(*iter) = nullptr;
+			}
+		}
+	}
+
+
+	CMultiDelegate<ReturnType, ParamType...>& operator+=(IDelegate<ReturnType, ParamType...>* _delegate)
+	{
+		for (ListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if ((*iter) && (*iter)->compare(_delegate))
+			{
+				delete _delegate;
+				return *this;
+			}
+		}
+		mListDelegates.push_back(_delegate);
+		return *this;
+	}
+
+	CMultiDelegate<ReturnType, ParamType...>& operator-=(IDelegate<ReturnType, ParamType...>* _delegate)
+	{
+		for (ListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if ((*iter) && (*iter)->compare(_delegate))
+			{
+				if ((*iter) != _delegate) delete (*iter);       //避免同一个地址被delete两次
+				(*iter) = 0;
+				break;
+			}
+		}
+		delete _delegate;
+		return *this;
+	}
+
+	std::vector<ReturnType> operator()(ParamType... params)
+	{
+		ListDelegateIterator iter = mListDelegates.begin();
+		std::vector<ReturnType> _Results;
+		while (iter != mListDelegates.end())
+		{
+			if (0 == (*iter))
+			{
+				iter = mListDelegates.erase(iter);
+			}
+			else
+			{
+				_Results.push_back((*iter)->invoke(params...));
+				++iter;
+			}
+		}
+		return _Results;
+	}
+private:
+	CMultiDelegate<ReturnType, ParamType...>(const CMultiDelegate& _event);
+	CMultiDelegate<ReturnType, ParamType...>& operator=(const CMultiDelegate& _event);
+
+private:
+	ListDelegate mListDelegates;
+};
+
+
+//多播委托返回为空的情况，void无返回值类型多播委托需要特殊处理。所以我们还需要一个多播委托对于ReturnType为void这个情况的特化。
+template< typename ...ParamType>
+class CMultiDelegate<void, ParamType...>
+{
+
+public:
+
+	typedef std::list<IDelegate<void, ParamType...>*> ListDelegate;
+	typedef typename ListDelegate::iterator ListDelegateIterator;
+	typedef typename ListDelegate::const_iterator ConstListDelegateIterator;
+
+	CMultiDelegate() { }
+	~CMultiDelegate() { clear(); }
+
+	bool empty() const
+	{
+		for (ConstListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if (*iter) return false;
+		}
+		return true;
+	}
+
+	void clear()
+	{
+		for (ListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if (*iter)
+			{
+				delete (*iter);
+				(*iter) = nullptr;
+			}
+		}
+	}
+
+	CMultiDelegate<void, ParamType...>& operator+=(IDelegate<void, ParamType...>* _delegate)
+	{
+		for (ListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if ((*iter) && (*iter)->compare(_delegate))
+			{
+				delete _delegate;
+				return *this;
+			}
+		}
+		mListDelegates.push_back(_delegate);
+		return *this;
+	}
+
+	CMultiDelegate<void, ParamType...>& operator-=(IDelegate<void, ParamType...>* _delegate)
+	{
+		for (ListDelegateIterator iter = mListDelegates.begin(); iter != mListDelegates.end(); ++iter)
+		{
+			if ((*iter) && (*iter)->compare(_delegate))
+			{
+				if ((*iter) != _delegate) delete (*iter);       //避免同一个地址被delete两次
+				(*iter) = 0;
+				break;
+			}
+		}
+		delete _delegate;
+		return *this;
+	}
+
+	void operator()(ParamType... params)
+	{
+		ListDelegateIterator iter = mListDelegates.begin();
+		while (iter != mListDelegates.end())
+		{
+			if (0 == (*iter))
+			{
+				iter = mListDelegates.erase(iter);
+			}
+			else
+			{
+				(*iter)->invoke(params...);
+				++iter;
+			}
+		}
+	}
+private:
+	CMultiDelegate<void, ParamType...>(const CMultiDelegate& _event);
+	CMultiDelegate<void, ParamType...>& operator=(const CMultiDelegate& _event);
+
+private:
+	ListDelegate mListDelegates;
+};
+ 
+
+template< typename T>
+CStaticDelegate<T>* newDelegate(T func)
+{
+	return new CStaticDelegate<T>(func);
+}
+
+template< typename T, typename F>
+CMethodDelegate<T, F>* newDelegate(T * _object, F func)
+{
+	return new CMethodDelegate<T, F>(_object, func);
+}
+
+
+
+void NormalFunc(int a)
+{
+	printf("这里是普通函数 ：%d\n", a);
+}
+
+class A
+{
+public:
+	static void StaticFunc(int a)
+	{
+		printf("这里是成员静态函数 ： %d\n", a);
+	}
+	void MemberFunc(int a)
+	{
+		printf("这里是成员非静态函数 ： %d\n", a);
+	}
+};
+
+
+int main()
+{
+	//首先创建了一个返回值为 void ,参数为int 的一个委托。  
+	CMultiDelegate<void, int> e;
+
+	typedef	 void(*FunPtr)(int);
+
+
+	//将三个函数注册到该委托中  
+	e += newDelegate(NormalFunc);
+	e += newDelegate(A::StaticFunc);
+	e += newDelegate(&A(), &A::MemberFunc);
+
+	e += newDelegate<FunPtr>(NormalFunc);
+	CStaticDelegate<FunPtr>*  ptr = newDelegate<FunPtr>(NormalFunc);
+	//CStaticDelegate<void, int>*  castPtr = static_cast<CStaticDelegate<void, int>*>(ptr);
+	(ptr->invoke)(9);
+
+
+
+	//调用  
+	e(1);
 
 	return 0;
+
 }
+
+

@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dijkstra.h" />
+    <ClInclude Include="MyDelegate.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
